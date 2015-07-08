@@ -40,7 +40,7 @@ end
 function PLUGIN:GetPlayerFormatting(player)
 	local uid = rust.UserIDFromPlayer(player)
 	local playerData = {}
-	local playerData.GroupRank = 0
+	playerData.GroupRank = 0
 	for group, data in pairs(self.Config) do
 		if permission.UserHasPermission(uid, data.Permission) then
 			if data.Rank > playerData.GroupRank then
@@ -98,7 +98,7 @@ end
 function PLUGIN:OnPlayerChat(arg)
 	local player = arg.connection.player
     local message = arg:GetString(0, "text")
-    local userId = rust.UserIDFromPlayer(player)
+    local uid = rust.UserIDFromPlayer(player)
 	
 	if string.find(message, "<color=") or string.find(message, "</color>") or string.find(message, "<size=") or string.find(message, "</size>") or string.find(message, "<b>") or string.find(message, "</b>") or string.find(message, "<i>") or string.find(message, "</i>") then
 		if not permission.UserHasPermission(userId, "canUseFormatting") then
@@ -117,7 +117,7 @@ function PLUGIN:OnPlayerChat(arg)
 	local groups = self.Config
 	
 	local playerData = {}
-	local playerData.GroupRank = 0
+	playerData.GroupRank = 0
 	for group, data in pairs(self.Config) do
 		if permission.UserHasPermission(uid, data.Permission) then
 			if data.Rank > playerData.GroupRank then
@@ -134,13 +134,15 @@ function PLUGIN:OnPlayerChat(arg)
 				playerData.FormattedOutput = string.gsub(playerData.FormattedOutput, "{TitleColor}", data.TitleColor)
 				playerData.FormattedOutput = string.gsub(playerData.FormattedOutput, "{NameColor}", data.NameColor)
 				playerData.FormattedOutput = string.gsub(playerData.FormattedOutput, "{TextColor}", data.TextColor)
-				playerData.FormattedOutput = string.gsub(playerData.FormattedOutput, "{Player}", "<color=" .. data.NameColor .. ">" .. player.displayName .. "</color>")
+				playerData.FormattedOutput = string.gsub(playerData.FormattedOutput, "{Name}", "<color=" .. data.NameColor .. ">" .. player.displayName .. "</color>")
 				playerData.FormattedOutput = string.gsub(playerData.FormattedOutput, "{ID}", rust.UserIDFromPlayer(player))
+				playerData.FormattedOutput = string.gsub(playerData.FormattedOutput, "{Message}", message)
 			end
 		end
 	end
 	
 	rust.BroadcastChat(playerData.FormattedOutput)
+	print(playerData.FormattedOutput)
 	
     return false
 end
