@@ -1,10 +1,5 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System;
-using System.Data;
-using UnityEngine;
-using Oxide.Core;
-using System.Linq;
 
 namespace Oxide.Plugins
 {
@@ -18,7 +13,7 @@ namespace Oxide.Plugins
 
             foreach (var group in Config)
             {
-                string groupName = group.Key.ToString();
+                string groupName = group.Key;
 
                 permission.RegisterPermission(Config[groupName, "Permission"].ToString(), this);
 
@@ -63,14 +58,14 @@ namespace Oxide.Plugins
         Dictionary<string, string> GetPlayerFormatting(BasePlayer player)
         {
             string uid = player.userID.ToString();
-            Dictionary<string, string> playerData;
+            Dictionary<string, string> playerData = new Dictionary<string, string>();
             playerData["GroupRank"] = "0";
             foreach (var group in Config)
             {
-				string groupName = group.Key.ToString();
-                if(permission.UserHasPermission(uid, Config[groupName, "Permission"].ToString()))
+                string groupName = group.Key;
+                if (permission.UserHasPermission(uid, Config[groupName, "Permission"].ToString()))
                 {
-                    if(Convert.ToInt32(Config[groupName, "Rank"]) > Convert.ToInt32(playerData.GroupRank))
+                    if (Convert.ToInt32(Config[groupName, "Rank"]) > Convert.ToInt32(playerData["GroupRank"]))
                     {
                         playerData["Formatting"] = Config[groupName, "Formatting"].ToString();
                         playerData["ConsoleOutput"] = Config[groupName, "ConsoleFormatting"].ToString();
@@ -89,11 +84,11 @@ namespace Oxide.Plugins
         [ChatCommand("colors")]
         void ColorList(BasePlayer player)
         {
-            List<string> colorList = {"aqua", "black", "blue", "brown", "darkblue", "green", "grey", "lightblue", "lime", "magenta", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "white", "yellow"};
+            List<string> colorList = new List<string> { "aqua", "black", "blue", "brown", "darkblue", "green", "grey", "lightblue", "lime", "magenta", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "white", "yellow" };
             string colors = "";
             foreach (string color in colorList)
             {
-                if(colors == "")
+                if (colors == "")
                 {
                     colors = "<color=" + color + ">" + color.ToUpper() + "</color>";
                 }
@@ -107,34 +102,34 @@ namespace Oxide.Plugins
 
         bool OnPlayerChat(ConsoleSystem.Arg arg)
         {
-            BasePlayer player = arg.connection.player;
+            BasePlayer player = (BasePlayer) arg.connection.player;
             String message = arg.GetString(0, "text");
             string uid = player.userID.ToString();
             var ChatMute = plugins.Find("chatmute");
 
             if (message.Contains("<color=") || message.Contains("</color>") || message.Contains("<size=") || message.Contains("</size>") || message.Contains("<b>") || message.Contains("<\b>") || message.Contains("<i>") || message.Contains("</i>"))
             {
-                if(!permission.UserHasPermission(uid, "canUseFormatting"))
+                if (!permission.UserHasPermission(uid, "canUseFormatting"))
                 {
                     SendChatMessage(player, "CHAT", "You may not use formatting tags!");
                     return false;
                 }
             }
 
-            if(ChatMute != null)
+            if (ChatMute != null)
             {
-                bool isMuted = ChatMute.Call("IsMuted", player);
-                if(isMuted) return false;
+                bool isMuted = (bool) ChatMute.Call("IsMuted", player);
+                if (isMuted) return false;
             }
 
-            Dictionary<string, string> playerData;
+            Dictionary<string, string> playerData = new Dictionary<string, string>();
             playerData["GroupRank"] = "0";
             foreach (var group in Config)
             {
-				string groupName = group.Key.ToString();
+                string groupName = group.Key;
                 if (permission.UserHasPermission(uid, Config[groupName, "Permission"].ToString()))
                 {
-                    if (Convert.ToInt32(Config[groupName, "Rank"]) > Convert.ToInt32(playerData["GroupRank)"])
+                    if (Convert.ToInt32(Config[groupName, "Rank"]) > Convert.ToInt32(playerData["GroupRank"]))
                     {
                         playerData["Formatting"] = Config[groupName, "Formatting"].ToString();
                         playerData["ConsoleOutput"] = Config[groupName, "ConsoleFormatting"].ToString();
@@ -172,10 +167,10 @@ namespace Oxide.Plugins
 
             return false;
         }
-		
-		
+
+
         #region UsefulMethods
-		//--------------------------->   Player finding   <---------------------------//
+        //--------------------------->   Player finding   <---------------------------//
 
         BasePlayer GetPlayer(string searchedPlayer, BasePlayer executer, string prefix)
         {
@@ -230,7 +225,7 @@ namespace Oxide.Plugins
             }
             return targetPlayer;
         }
-		
+
         //------------------------------>   Config   <------------------------------//
 
         void StringConfig(string GroupName, string DataName, string Data)
@@ -283,7 +278,7 @@ namespace Oxide.Plugins
 
         void SendChatMessage(BasePlayer player, string prefix, string msg = null)
         {
-            if(msg != null)
+            if (msg != null)
             {
                 SendReply(player, "<color=orange>" + prefix + "</color>: " + msg);
             }
@@ -292,7 +287,7 @@ namespace Oxide.Plugins
                 msg = prefix;
                 SendReply(player, msg);
             }
-            
+
         }
 
         //---------------------------------------------------------------------------//
