@@ -10,7 +10,7 @@ namespace Oxide.Plugins
 {
     [Info("Better Chat", "LaserHydra", "3.0.0", ResourceId = 979)]
     [Description("Change colors, formatting, prefix and more of the chat.")]
-    class BetterChat : RustPlugin
+    class BetterChats : RustPlugin
     {
         void Loaded()
         {
@@ -175,6 +175,61 @@ namespace Oxide.Plugins
 		
 		
         #region UsefulMethods
+		//--------------------------->   Player finding   <---------------------------//
+
+        BasePlayer GetPlayer(string searchedPlayer, BasePlayer executer, string prefix)
+        {
+            BasePlayer targetPlayer = null;
+            List<string> foundPlayers = new List<string>();
+            string searchedLower = searchedPlayer.ToLower();
+            foreach (BasePlayer player in BasePlayer.activePlayerList)
+            {
+                string display = player.displayName;
+                string displayLower = display.ToLower();
+
+                if (!displayLower.Contains(searchedLower))
+                {
+                    continue;
+                }
+                if (displayLower.Contains(searchedLower))
+                {
+                    foundPlayers.Add(display);
+                }
+            }
+            var matchingPlayers = foundPlayers.ToArray();
+
+            if (matchingPlayers.Length == 0)
+            {
+                SendChatMessage(executer, prefix, "No matching players found!");
+            }
+
+            if (matchingPlayers.Length > 1)
+            {
+                SendChatMessage(executer, prefix, "Multiple players found:");
+                string multipleUsers = "";
+                foreach (string matchingplayer in matchingPlayers)
+                {
+                    if (multipleUsers == "")
+                    {
+                        multipleUsers = "<color=yellow>" + matchingplayer + "</color>";
+                        continue;
+                    }
+
+                    if (multipleUsers != "")
+                    {
+                        multipleUsers = multipleUsers + ", " + "<color=yellow>" + matchingplayer + "</color>";
+                    }
+
+                }
+                SendChatMessage(executer, prefix, multipleUsers);
+            }
+
+            if (matchingPlayers.Length == 1)
+            {
+                targetPlayer = BasePlayer.Find(matchingPlayers[0]);
+            }
+            return targetPlayer;
+        }
 		
         //------------------------------>   Config   <------------------------------//
 
