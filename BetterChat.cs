@@ -10,7 +10,7 @@ namespace Oxide.Plugins
 {
     [Info("Better Chat", "LaserHydra", "3.0.0", ResourceId = 979)]
     [Description("Change colors, formatting, prefix and more of the chat.")]
-    class BetterChats : RustPlugin
+    class BetterChat : RustPlugin
     {
         void Loaded()
         {
